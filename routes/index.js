@@ -1,5 +1,5 @@
 const express = require('express');
-const users = require('./users');
+const users = require('./users.js');
 const cards = require('./cards');
 
 const router = express.Router();
