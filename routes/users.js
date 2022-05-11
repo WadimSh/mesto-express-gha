@@ -3,8 +3,8 @@ const {
   findUser, findAllUsers, createUser,
 } = require('../controllers/users');
 
-router.get('/:userId', findUser);
-router.get('/', findAllUsers);
-router.post('/', createUser);
+router.get('/users/:userId', findUser);
+router.get('/users', findAllUsers);
+router.post('/users', createUser);
 
 module.exports = router;
