@@ -2,7 +2,7 @@ const User = require('../models/user');
 
 const findUser = (req, res) => {
     User.findById(req.params.userId)
-      .then((user) => res.status(200).send({ data: user }))
+      .then((user) => res.send({ data: user }))
       .catch(() => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
 
@@ -20,5 +20,5 @@ const createUser = (req, res) => {
 };
 
 module.exports = {
-  findUser, findAllUsers, createUser,
+  findUser, findAllUsers, createUser
 };

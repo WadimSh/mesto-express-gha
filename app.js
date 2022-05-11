@@ -1,17 +1,14 @@
 const express = require('express');
-
 const mongoose = require('mongoose');
-
 
 const { PORT = 3000 } = process.env; 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://localhost:27017/mynewdb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
 });
 
-app.use('/', require('./routes/users'));
-
+app.use('/users', require('./routes/users'));
 app.listen(PORT, () => { console.log(`Ссылкана сервер ${PORT}`);});
