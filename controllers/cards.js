@@ -4,20 +4,32 @@ const findAllCards = (_, res) => {
   Card.find({})
     .populate('owner')
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch(() => res.status(500).send({ message: `Ошибка по умолчанию.` }));
 };
 
 const deleteCard = (req, res) => {
     Card.findOneAndRemove(req.params.cardId)
-      .then((card) => res.send({ data: card }))
-      .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+      .then((card) => {
+        if(!card) {
+          res.status(404).send({ message: `Карточка с указанным _id не найден.` });
+          return;
+        } 
+        res.send({ data: card })
+      })
+      .catch(() => res.status(500).send({ message: `Ошибка по умолчанию.` }));
 };
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => {
+      if(err.name === 'ValidationError') {
+        res.status(400).send({ message: `Переданы некорректные данные при создании карточки.` });
+        return;
+      }
+      res.status(500).send({ message: `Ошибка по умолчанию.` })
+    });
 };
 
 const likeCard = (req, res) => {
@@ -26,8 +38,20 @@ const likeCard = (req, res) => {
   { $addToSet: { likes: req.user._id } }, 
   { new: true },
   )
-  .then((card) => res.send({ data: card }))
-  .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+  .then((card) => {
+    if(!card) {
+      res.status(404).send({ message: `Передан несуществующий _id карточки.` });
+      return;
+    }
+    res.send({ data: card })
+  })
+  .catch((err) => {
+    if(err.name === 'ValidationError') {
+      res.status(400).send({ message: `Переданы некорректные данные для постановки лайка.` });
+      return;
+    }
+    res.status(500).send({ message: `Ошибка по умолчанию.` })
+  });
 };
 
 const dislikeCard = (req, res) => {
@@ -36,8 +60,20 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-  .then((card) => res.send({ data: card }))
-  .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+  .then((card) => {
+    if(!card) {
+      res.status(404).send({ message: `Передан несуществующий _id карточки.` });
+      return;
+    }
+    res.send({ data: card })
+  })
+  .catch((err) => {
+    if(err.name === 'ValidationError') {
+      res.status(400).send({ message: `Переданы некорректные данные для снятии лайка.` });
+      return;
+    }
+    res.status(500).send({ message: `Ошибка по умолчанию.` })
+  });
 };
 
 module.exports = {
