@@ -1,7 +1,7 @@
 const User = require('../models/user');
 
 const findUser = (req, res) => {
-    User.findById(req.params.userId)
+    User.findById(req.params._id)
       .then((user) => res.send({ data: user }))
       .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
 };
@@ -13,7 +13,6 @@ const findAllUsers = (_, res) => {
 };
 
 const createUser = (req, res) => {
-  console.log(req.body)
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
