@@ -9,7 +9,13 @@ const findUser = (req, res) => {
         } 
         res.send({ data: user })
     })
-      .catch(() => res.status(500).send({ message: `Ошибка по умолчанию.` }));
+    .catch((err) => {
+      if(err.name === 'ValidationError') {
+        res.status(400).send({ message: `Невалидный id.` });
+        return;
+      }
+      res.status(500).send({ message: `Ошибка по умолчанию.` })
+    });
 };
 
 const findAllUsers = (_, res) => {
@@ -33,7 +39,7 @@ const createUser = (req, res) => {
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if(!user) {
         res.status(404).send({ message: `Пользователь по указанному _id не найден.` });
@@ -52,12 +58,12 @@ const updateUser = (req, res) => {
 
 const updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      if(err.name === 'ValidationError') {
-        res.status(400).send({ message: `Переданы некорректные данные при создании пользователя.` });
+      if(!user) {
+        res.status(404).send({ message: `Пользователь по указанному _id не найден.` });
         return;
-      }
+      } 
       res.send({ data: user })
     })
     .catch((err) => {

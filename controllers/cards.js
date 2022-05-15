@@ -8,7 +8,7 @@ const findAllCards = (_, res) => {
 };
 
 const deleteCard = (req, res) => {
-    Card.findOneAndRemove(req.params.cardId)
+    Card.findByIdAndRemove(req.params.cardId)
       .then((card) => {
         if(!card) {
           res.status(404).send({ message: `Карточка с указанным _id не найден.` });
@@ -16,7 +16,13 @@ const deleteCard = (req, res) => {
         } 
         res.send({ data: card })
       })
-      .catch(() => res.status(500).send({ message: `Ошибка по умолчанию.` }));
+      .catch(() => {
+        if (err.name === 'CastError') {
+          res.status(400).send({ message: 'Невалидный id.' });
+          return;
+        }
+        res.status(500).send({ message: `Ошибка по умолчанию.` })
+      });
 };
 
 const createCard = (req, res) => {
@@ -46,8 +52,8 @@ const likeCard = (req, res) => {
     res.send({ data: card })
   })
   .catch((err) => {
-    if(err.name === 'ValidationError') {
-      res.status(400).send({ message: `Переданы некорректные данные для постановки лайка.` });
+    if (err.name === 'CastError') {
+      res.status(400).send({ message: 'Невалидный id.' });
       return;
     }
     res.status(500).send({ message: `Ошибка по умолчанию.` })
@@ -68,8 +74,8 @@ const dislikeCard = (req, res) => {
     res.send({ data: card })
   })
   .catch((err) => {
-    if(err.name === 'ValidationError') {
-      res.status(400).send({ message: `Переданы некорректные данные для снятии лайка.` });
+    if (err.name === 'CastError') {
+      res.status(400).send({ message: 'Невалидный id.' });
       return;
     }
     res.status(500).send({ message: `Ошибка по умолчанию.` })
