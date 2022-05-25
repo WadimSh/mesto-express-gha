@@ -3,7 +3,6 @@ const {
   findAuthorizationUser,
   findUser,
   findAllUsers,
-  createUser,
   updateUser,
   updateAvatar,
 } = require('../controllers/users');
@@ -11,7 +10,6 @@ const {
 router.get('/me', findAuthorizationUser);
 router.get('/:userId', findUser);
 router.get('/', findAllUsers);
-//router.post('/', createUser);
 router.patch('/me', updateUser);
 router.patch('/me/avatar', updateAvatar);
 
