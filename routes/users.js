@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const {
+  findAuthorizationUser,
   findUser,
   findAllUsers,
   createUser,
@@ -7,6 +8,7 @@ const {
   updateAvatar,
 } = require('../controllers/users');
 
+router.get('/me', findAuthorizationUser);
 router.get('/:userId', findUser);
 router.get('/', findAllUsers);
 //router.post('/', createUser);

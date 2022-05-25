@@ -14,6 +14,24 @@ const login = (req, res) => {
     });
 };
 
+const findAuthorizationUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
+        return;
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный id.' });
+        return;
+      }
+      res.status(500).send({ message: 'Ошибка по умолчанию.' });
+    });
+};
+
 const findUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
@@ -95,5 +113,5 @@ const updateAvatar = (req, res) => {
 };
 
 module.exports = {
-  login, findUser, findAllUsers, createUser, updateUser, updateAvatar,
+  login, findAuthorizationUser, findUser, findAllUsers, createUser, updateUser, updateAvatar,
 };
