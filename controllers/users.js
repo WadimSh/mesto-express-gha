@@ -15,13 +15,14 @@ const login = (req, res) => {
 };
 
 const findAuthorizationUser = (req, res) => {
-  User.findById(req.user._id)
+  const id = req.user._id;
+  User.findById(id)
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден.' });
         return;
       }
-      res.send(user);
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
