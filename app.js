@@ -34,15 +34,15 @@ app.use((_, res) => {
   res.status(404).send({ message: 'Страница с таким url не найдена' });
 });
 
-app.use((err, req, res, next) => {
+app.use((err, _, res) => {
   const { statusCode = 500, message } = err;
   res
     .status(statusCode)
     .send({
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
-        : message
+        : message,
     });
-}); 
+});
 
 app.listen(PORT);
