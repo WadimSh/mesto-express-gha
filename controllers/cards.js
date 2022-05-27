@@ -1,44 +1,48 @@
 const Card = require('../models/card');
 
-const findAllCards = (_, res) => {
+const InvalidRequest = require('../errors/InvalidRequest');
+const ProhibitedAction = require('../errors/ProhibitedAction');
+const NotFound = require('../errors/NotFound');
+
+const findAllCards = (_, res, next) => {
   Card.find({})
     .populate('owner')
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
+    .catch((err) => next(err.message));
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка с указанным _id не найден.' });
-        return;
+        throw new NotFound('Карточка с указанным _id не найден.');
+      } else if (!card.owner.equals(req.user._id)) {
+        throw new ProhibitedAction('Попытка удалить чужую карточку.');
+      } else {
+        return card.remove().then(() => res.status(200).send({ data: card }));
       }
-      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный id.' });
-        return;
+        next(new InvalidRequest('Невалидный id.'));
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      next(err.message);
     });
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
-        return;
+        next(new InvalidRequest('Переданы некорректные данные при создании карточки.'));
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      next(err.message);
     });
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -46,21 +50,19 @@ const likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-        return;
+        next(new NotFound('Передан несуществующий _id карточки.'));
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный id.' });
-        return;
+        next(new InvalidRequest('Невалидный id.'));
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      next(err.message);
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -68,17 +70,15 @@ const dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-        return;
+        next(new NotFound('Передан несуществующий _id карточки.'));
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный id.' });
-        return;
+        next(new InvalidRequest('Невалидный id.'));
       }
-      res.status(500).send({ message: 'Ошибка по умолчанию.' });
+      next(err.message);
     });
 };
 
