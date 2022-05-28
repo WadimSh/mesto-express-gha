@@ -11,7 +11,7 @@ const {
 
 router.get('/me', findAuthorizationUser);
 router.get('/:userId', celebrate({
-  body: Joi.object().keys({
+  params: Joi.object().keys({
     userId: Joi.string().required().hex().length(24),
   }),
 }), findUser);
