@@ -45,7 +45,7 @@ app.use('/users', auth, require('./routes/users'));
 
 app.use('/cards', auth, require('./routes/cards'));
 
-app.use('*', auth, (_, next) => {
+app.use('*', auth, (req, res, next) => {
   next(new NotFound('Страница с таким url не найдена.'));
 });
 

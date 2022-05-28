@@ -10,7 +10,11 @@ const {
 } = require('../controllers/users');
 
 router.get('/me', findAuthorizationUser);
-router.get('/:userId', findUser);
+router.get('/:userId', celebrate({
+  body: Joi.object().keys({
+    userId: Joi.string().length(24).hex().required(),
+  }),
+}), findUser);
 router.get('/', findAllUsers);
 router.patch('/me', celebrate({
   body: Joi.object().keys({
