@@ -8,7 +8,7 @@ const findAllCards = (_, res, next) => {
   Card.find({})
     .populate('owner')
     .then((card) => res.send({ data: card }))
-    .catch((err) => next(err.message));
+    .catch((err) => next(err));
 };
 
 const deleteCard = (req, res, next) => {
@@ -25,8 +25,9 @@ const deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new InvalidRequest('Невалидный id.'));
+        return;
       }
-      next(err.message);
+      next(err);
     });
 };
 
@@ -37,8 +38,9 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new InvalidRequest('Переданы некорректные данные при создании карточки.'));
+        return;
       }
-      next(err.message);
+      next(err);
     });
 };
 
@@ -51,14 +53,16 @@ const likeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFound('Передан несуществующий _id карточки.'));
+        return;
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new InvalidRequest('Невалидный id.'));
+        return;
       }
-      next(err.message);
+      next(err);
     });
 };
 
@@ -71,14 +75,16 @@ const dislikeCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         next(new NotFound('Передан несуществующий _id карточки.'));
+        return;
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new InvalidRequest('Невалидный id.'));
+        return;
       }
-      next(err.message);
+      next(err);
     });
 };
 
