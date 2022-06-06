@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
 
 const auth = require('./middlewares/auth');
+const { requestLogger, errorLogger } = require('./middlewares/logger'); 
 
 const NotFound = require('./errors/NotFound');
 
@@ -18,6 +19,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 });
 
 app.use(express.json());
+
+app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+}); 
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -48,6 +57,8 @@ app.use('/cards', auth, require('./routes/cards'));
 app.use('*', auth, (req, res, next) => {
   next(new NotFound('Страница с таким url не найдена.'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
