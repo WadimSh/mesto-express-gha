@@ -27,7 +27,7 @@ const findAuthorizationUser = (req, res, next) => {
         next(new NotFound('Пользователь по указанному _id не найден.'));
         return;
       }
-      res.send(user);
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -45,7 +45,7 @@ const findUser = (req, res, next) => {
         next(new NotFound('Пользователь по указанному _id не найден.'));
         return;
       }
-      res.send(user);
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -101,7 +101,7 @@ const updateUser = (req, res, next) => {
         next(new NotFound('Пользователь по указанному _id не найден.'));
         return;
       }
-      res.send(user);
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -120,7 +120,7 @@ const updateAvatar = (req, res, next) => {
         next(new NotFound('Пользователь по указанному _id не найден.'));
         return;
       }
-      res.send(user);
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
