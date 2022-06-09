@@ -7,7 +7,7 @@ const NotFound = require('../errors/NotFound');
 const findAllCards = (_, res, next) => {
   Card.find({})
     .populate('owner')
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => next(err));
 };
 

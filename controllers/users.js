@@ -58,7 +58,7 @@ const findUser = (req, res, next) => {
 
 const findAllUsers = (_, res, next) => {
   User.find({})
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => next(err));
 };
 
