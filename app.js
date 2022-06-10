@@ -14,8 +14,6 @@ const { login, createUser } = require('./controllers/users');
 const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(cors());
-
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -25,6 +23,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(express.json());
 
 app.use(requestLogger);
+
+app.use(cors());
 
 app.get('/crash-test', () => {
   setTimeout(() => {
